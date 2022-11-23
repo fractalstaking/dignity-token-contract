@@ -39,7 +39,7 @@ contract DignityTokenSwap is AccessControl {
 
     constructor(address _dignityToken, 
         address _stable, 
-        uint8 _cost, 
+        uint256 _cost, 
         address _dignityWallet,
         address _ethUsdAddress) {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -103,20 +103,13 @@ contract DignityTokenSwap is AccessControl {
         require(tokensMap[_token] > 0, "Token not supported!");
         
         IERC20Metadata paytoken = IERC20Metadata(_token);        
-        uint256 cost = tokensMap[_token];   // cost in USD
-        require(cost > 0, "Invalid unit cost");
+        uint256 cost = tokensMap[_token];   // cost (in token's decimal)       
 
-        uint8 tokenDecimals = paytoken.decimals();
         uint8 dtDecimals = dignityToken.decimals();                
-        uint256 amount = _amount / cost;         
-        uint256 dtAmount = amount / (10**(tokenDecimals -  dtDecimals));
+    	uint256 dtAmount = _amount * 10**dtDecimals / cost;
         require(dtAmount > 0, "Invalid cost");
 
-        // recalulate the _amount of stable coin to deduct based on DK issuance 
-        uint256 adjustedAmount = dtAmount * cost * (10**(tokenDecimals - dtDecimals));
-        require(dtAmount > 0, "Invalid adjusted cost");
-
-        paytoken.transferFrom(msg.sender, address(this), adjustedAmount);                
+        paytoken.transferFrom(msg.sender, address(this), _amount);                
         dignityToken.mint(msg.sender, dtAmount);
     }
 
