@@ -45,7 +45,7 @@ contract DignityTokenSwap is AccessControl {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
 
         dignityToken = IDignityToken(_dignityToken);        
-        coinPrice = _cost;
+        coinPrice = 10;
         dignityWallet = _dignityWallet;
         addTokenToSupportList(IERC20(_stable), _cost);        
         priceFeed = AggregatorV3Interface(_ethUsdAddress);        
