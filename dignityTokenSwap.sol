@@ -35,6 +35,8 @@ contract DignityTokenSwap is AccessControl {
     uint public coinPrice;    
 
     address public dignityWallet;
+    address public dignityWalletToken;
+    
     bool public paused = false;
 
     constructor(address _dignityToken, 
@@ -47,6 +49,7 @@ contract DignityTokenSwap is AccessControl {
         dignityToken = IDignityToken(_dignityToken);        
         coinPrice = 10;
         dignityWallet = _dignityWallet;
+        dignityWalletToken = _dignityWallet;        
         addTokenToSupportList(IERC20(_stable), _cost);        
         priceFeed = AggregatorV3Interface(_ethUsdAddress);        
     }
@@ -63,7 +66,11 @@ contract DignityTokenSwap is AccessControl {
     }
 
     function setDignityWallet(address _addr) external onlyRole(DEFAULT_ADMIN_ROLE) {
-      dignityWallet = _addr;
+        dignityWallet = _addr;
+    }
+    
+    function setDignityWalletToken(address _addr) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        dignityWalletToken = _addr;
     }
 
     /**
@@ -133,6 +140,6 @@ contract DignityTokenSwap is AccessControl {
         require(tokensMap[_token] > 0, "Token not supported!");
 
         IERC20 paytoken = IERC20(_token);        
-        paytoken.transfer(dignityWallet, paytoken.balanceOf(address(this)));
+        paytoken.transfer(dignityWalletToken, paytoken.balanceOf(address(this)));
     }
 }
